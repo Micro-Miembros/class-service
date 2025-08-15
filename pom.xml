@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>co.analisys</groupId>
-	<artifactId>circulacionservice</artifactId>
+	<artifactId>class-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>circulacionservice</name>
-	<description>Microservicio Circulacion</description>
+	<name>class-service</name>
+	<description>Microservicio Clases</description>
 	<url/>
 	<licenses>
 		<license/>
