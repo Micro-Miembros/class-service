@@ -15,4 +15,18 @@ public class Clase {
     private LocalDateTime horario;
     private int capacidadMaxima;
     private Long trainerId;
+    private Long equipoId;
+    private Long cantidadEquipos;
+    
+    public void setEntrenadorId(Long entrenadorId) {
+        this.trainerId = entrenadorId;
+    }
+
+    public void setEquipoId(Long equipoId) {
+        this.equipoId = equipoId;
+    }
+
+    public void setCantidadEquipos(Long cantidadEquipos) {
+        this.cantidadEquipos = cantidadEquipos;
+    }
 }
