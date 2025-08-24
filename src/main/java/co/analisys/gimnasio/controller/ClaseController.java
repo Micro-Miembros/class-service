@@ -12,7 +12,8 @@ import java.util.List;
 public class ClaseController {
     @Autowired
     private ClaseService gimnasioService;
-    
+
+    // Clases
     @PostMapping("/clases")
     public Clase programarClase(@RequestBody Clase clase) {
         return gimnasioService.programarClase(clase);
@@ -23,6 +24,7 @@ public class ClaseController {
         return gimnasioService.obtenerTodasClases();
     }
 
+    // Trainers
     @PostMapping("/clases/{claseId}/reservar-entrenador/{entrenadorId}")
     public void reservarEntrenador(@PathVariable Long claseId, @PathVariable Long entrenadorId) {
         gimnasioService.reservarEntrenador(entrenadorId, claseId);
@@ -33,6 +35,7 @@ public class ClaseController {
         gimnasioService.cancelarEntrenador(entrenadorId, claseId);
     }
 
+    // Equipment
     @PostMapping("/clases/{claseId}/reservar-equipo/{equipoId}/cantidad/{cantidad}")
     public void reservarEquipo(@PathVariable Long claseId, @PathVariable Long equipoId, @PathVariable Long cantidad) {
         gimnasioService.reservarEquipo(equipoId, cantidad, claseId);
@@ -41,5 +44,16 @@ public class ClaseController {
     @PostMapping("/clases/{claseId}/devolver-equipo/{equipoId}/cantidad/{cantidad}")
     public void devolverEquipo(@PathVariable Long claseId, @PathVariable Long equipoId, @PathVariable Long cantidad) {
         gimnasioService.devolverEquipo(equipoId, cantidad, claseId);
+    }
+
+    // Members
+    @PostMapping("/clases/{claseId}/agregar-miembro/{miembroId}")
+    public void añadirMiembro(@PathVariable Long claseId, @PathVariable Long miembroId) {
+        gimnasioService.añadirMiembro(miembroId, claseId);
+    }
+
+    @DeleteMapping("/clases/{claseId}/eliminar-miembro/{miembroId}")
+    public void eliminarMiembro(@PathVariable Long claseId, @PathVariable Long miembroId) {
+        gimnasioService.eliminarMiembro(miembroId, claseId);
     }
 }
