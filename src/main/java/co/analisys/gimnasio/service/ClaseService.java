@@ -1,5 +1,8 @@
 package co.analisys.gimnasio.service;
 
+import co.analisys.gimnasio.clients.EquipmentClient;
+import co.analisys.gimnasio.clients.TrainerClient;
+import co.analisys.gimnasio.clients.MemberClient;
 import co.analisys.gimnasio.exception.ClaseNoEncontrada;
 import co.analisys.gimnasio.exception.EntrenadorNoDisponible;
 import co.analisys.gimnasio.exception.EquipoNoDisponible;
@@ -10,9 +13,7 @@ import co.analisys.gimnasio.repository.ClaseRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -30,23 +31,17 @@ public class ClaseService {
     }
 
     @Autowired
-    private RestTemplate restTemplate;
+    private EquipmentClient equipmentClient;
 
-    @Value("${trainer.service.url:http://localhost:8080}")
-    private String trainerServiceUrl;
+    @Autowired
+    private TrainerClient trainerClient;
 
-    @Value("${equipment.service.url:http://localhost:8082}")
-    private String equipmentServiceUrl;
-
-    @Value("${member.service.url:http://localhost:8081}")
-    private String memberServiceUrl;
+    @Autowired
+    private MemberClient memberClient;
 
     @Transactional
     public void reservarEntrenador(Long entrenadorId, Long claseId) {
-        Boolean entrenadorDisponible = restTemplate.postForObject(
-            trainerServiceUrl + "/api/gimnasio/entrenadores/" + entrenadorId + "/reservar",
-            null,
-            Boolean.class);
+        Boolean entrenadorDisponible = trainerClient.reservarEntrenador(entrenadorId);
 
         if (entrenadorDisponible != null && entrenadorDisponible) {
             Clase clase = claseRepository.findById(claseId)
@@ -60,10 +55,7 @@ public class ClaseService {
 
     @Transactional
     public void cancelarEntrenador(Long entrenadorId, Long claseId) {
-        Boolean entrenadorCancelado = restTemplate.postForObject(
-            trainerServiceUrl + "/api/gimnasio/entrenadores/" + entrenadorId + "/cancelar",
-            null,
-            Boolean.class);
+        Boolean entrenadorCancelado = trainerClient.cancelarEntrenador(entrenadorId);
 
         if (entrenadorCancelado != null && entrenadorCancelado) {
             Clase clase = claseRepository.findById(claseId)
@@ -77,10 +69,7 @@ public class ClaseService {
 
     @Transactional
     public void reservarEquipo(Long equipoId, Long cantidad, Long claseId) {
-        Boolean equipoDisponible = restTemplate.postForObject(
-            equipmentServiceUrl + "/api/gimnasio/equipos/" + equipoId + "/reservar/" + cantidad,
-            null,
-            Boolean.class);
+        Boolean equipoDisponible = equipmentClient.reservarEquipo(equipoId, cantidad);
 
         if (equipoDisponible != null && equipoDisponible) {
             Clase clase = claseRepository.findById(claseId)
@@ -97,10 +86,7 @@ public class ClaseService {
 
     @Transactional
     public void devolverEquipo(Long equipoId, Long cantidad, Long claseId) {
-        Boolean equipoDevuelto = restTemplate.postForObject(
-            equipmentServiceUrl + "/api/gimnasio/equipos/" + equipoId + "/devolver/" + cantidad,
-            null,
-            Boolean.class);
+        Boolean equipoDevuelto = equipmentClient.devolverEquipo(equipoId, cantidad);
 
         if (equipoDevuelto != null && equipoDevuelto) {
             Clase clase = claseRepository.findById(claseId)
@@ -116,10 +102,7 @@ public class ClaseService {
     }
 
     public void añadirMiembro(Long miembroId, Long claseId) {
-        boolean revisarMembresia = restTemplate.getForObject(
-            memberServiceUrl + "/api/gimnasio/miembros/" + miembroId + "/activa",
-            Boolean.class
-        );
+        boolean revisarMembresia = memberClient.isMiembroActivo(miembroId);
 
         if (!revisarMembresia) {
             throw new MiembroMembresiaNoActiva(miembroId);
