@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class ClaseController {
     })
     @Operation(summary = "Programar clase de gimnasio", description = "Permite programar una nueva clase en el gimnasio")
     @PostMapping("/clases")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Clase programarClase(@RequestBody Clase clase) {
         return gimnasioService.programarClase(clase);
     }
@@ -40,6 +42,7 @@ public class ClaseController {
     })
     @Operation(summary = "Obtener todas las clases de gimnasio", description = "Permite obtener la lista de todas las clases programadas en el gimnasio")
     @GetMapping("/clases")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER', 'ROLE_MEMBER')")
     public List<Clase> obtenerTodasClases() {
         return gimnasioService.obtenerTodasClases();
     }
@@ -54,6 +57,7 @@ public class ClaseController {
     })
     @Operation(summary = "Reservar entrenador para clase", description = "Permite reservar un entrenador para una clase específica")
     @PostMapping("/clases/{claseId}/reservar-entrenador/{entrenadorId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void reservarEntrenador(@PathVariable Long claseId, @PathVariable Long entrenadorId) {
         gimnasioService.reservarEntrenador(entrenadorId, claseId);
     }
@@ -67,6 +71,7 @@ public class ClaseController {
     })
     @Operation(summary = "Cancelar reserva de entrenador para clase", description = "Permite cancelar la reserva de un entrenador para una clase específica")
     @PostMapping("/clases/{claseId}/cancelar-entrenador/{entrenadorId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void cancelarReservaEntrenador(@PathVariable Long claseId, @PathVariable Long entrenadorId) {
         gimnasioService.cancelarEntrenador(entrenadorId, claseId);
     }
@@ -81,6 +86,7 @@ public class ClaseController {
     })
     @Operation(summary = "Reservar equipo para clase", description = "Permite reservar cierta cantidad de un equipo para una clase específica")
     @PostMapping("/clases/{claseId}/reservar-equipo/{equipoId}/cantidad/{cantidad}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public void reservarEquipo(@PathVariable Long claseId, @PathVariable Long equipoId, @PathVariable Long cantidad) {
         gimnasioService.reservarEquipo(equipoId, cantidad, claseId);
     }
@@ -94,6 +100,7 @@ public class ClaseController {
     })
     @Operation(summary = "Devolver equipo de clase", description = "Permite devolver cierta cantidad de un equipo para una clase específica")
     @PostMapping("/clases/{claseId}/devolver-equipo/{equipoId}/cantidad/{cantidad}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public void devolverEquipo(@PathVariable Long claseId, @PathVariable Long equipoId, @PathVariable Long cantidad) {
         gimnasioService.devolverEquipo(equipoId, cantidad, claseId);
     }
@@ -108,6 +115,7 @@ public class ClaseController {
     })
     @Operation(summary = "Agregar miembro a clase", description = "Permite agregar un miembro a una clase específica")
     @PostMapping("/clases/{claseId}/agregar-miembro/{miembroId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public void añadirMiembro(@PathVariable Long claseId, @PathVariable Long miembroId) {
         gimnasioService.añadirMiembro(miembroId, claseId);
     }
@@ -121,6 +129,7 @@ public class ClaseController {
     })
     @Operation(summary = "Eliminar miembro de clase", description = "Permite eliminar un miembro de una clase específica")
     @DeleteMapping("/clases/{claseId}/eliminar-miembro/{miembroId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public void eliminarMiembro(@PathVariable Long claseId, @PathVariable Long miembroId) {
         gimnasioService.eliminarMiembro(miembroId, claseId);
     }
