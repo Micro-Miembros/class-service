@@ -13,6 +13,7 @@ import co.analisys.gimnasio.repository.ClaseRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,12 @@ public class ClaseService {
 
     @Autowired
     private MemberClient memberClient;
+
+    @Autowired
+    private OcupacionClaseProducer ocupacionProducer;
+
+    @Autowired
+    private DatosEntrenamientoProducer datosEntrenamientoProducer;
 
     @Transactional
     public void reservarEntrenador(Long entrenadorId, Long claseId) {
@@ -116,6 +123,22 @@ public class ClaseService {
                 .orElseThrow(() -> new ClaseNoEncontrada(claseId));
         clase.setMiembroId(miembroId);
         claseRepository.save(clase);
+
+        // Enviar mensaje a Kafka después de añadir el miembro
+        ocupacionProducer.actualizarOcupacion(
+            claseId.toString(), 
+            clase.getNombre(),
+            clase.getMiembroId().size(), 
+            clase.getCapacidadMaxima()
+        );
+
+        // Enviar datos de entrenamiento a Kafka
+        datosEntrenamientoProducer.enviarDatosEntrenamiento(
+            miembroId, 
+            clase.getNombre(), 
+            30, 
+            200
+        );
     }
 
     public void eliminarMiembro(Long miembroId, Long claseId) {
@@ -128,6 +151,14 @@ public class ClaseService {
 
         clase.getMiembroId().remove(miembroId);
         claseRepository.save(clase);
+
+        // Enviar evento de ocupación actualizada
+        ocupacionProducer.actualizarOcupacion(
+            claseId.toString(), 
+            clase.getNombre(),
+            clase.getMiembroId().size(), 
+            clase.getCapacidadMaxima()
+        );
     }
 
     public void cambiarHorario(Long claseId, LocalDateTime nuevoHorario) {
