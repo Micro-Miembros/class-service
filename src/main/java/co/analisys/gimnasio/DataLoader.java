@@ -23,6 +23,9 @@ public class DataLoader implements CommandLineRunner {
         clase1.setHorario(LocalDateTime.now().plusDays(1).withHour(8).withMinute(0));
         clase1.setCapacidadMaxima(20);
         clase1.setTrainerId(1L);
+        clase1.getMiembroId().add(1L);
+        clase1.getMiembroId().add(2L);
+        clase1.getMiembroId().add(3L);
         claseRepository.save(clase1);
 
         Clase clase2 = new Clase();
@@ -30,6 +33,8 @@ public class DataLoader implements CommandLineRunner {
         clase2.setHorario(LocalDateTime.now().plusDays(1).withHour(18).withMinute(0));
         clase2.setCapacidadMaxima(15);
         clase2.setTrainerId(2L);
+        clase2.getMiembroId().add(1L);
+        clase2.getMiembroId().add(4L);
         claseRepository.save(clase2);
 
         System.out.println("Datos de ejemplo cargados exitosamente.");

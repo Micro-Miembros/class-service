@@ -15,12 +15,16 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ClaseService {
     @Autowired
     private ClaseRepository claseRepository;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     public Clase programarClase(Clase clase) {
         return claseRepository.save(clase);
@@ -126,4 +130,13 @@ public class ClaseService {
         claseRepository.save(clase);
     }
 
+    public void cambiarHorario(Long claseId, LocalDateTime nuevoHorario) {
+        Clase clase = claseRepository.findById(claseId)
+                .orElseThrow(() -> new ClaseNoEncontrada(claseId));
+        
+        clase.setHorario(nuevoHorario);
+        Clase claseActualizada = claseRepository.save(clase);
+        
+        notificationService.enviarNotificacionCambioHorario(claseActualizada);
+    }
 }

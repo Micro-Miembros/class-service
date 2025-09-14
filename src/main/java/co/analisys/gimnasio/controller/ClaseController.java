@@ -3,6 +3,7 @@ package co.analisys.gimnasio.controller;
 import co.analisys.gimnasio.model.Clase;
 import co.analisys.gimnasio.service.ClaseService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -132,5 +134,28 @@ public class ClaseController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public void eliminarMiembro(@PathVariable Long claseId, @PathVariable Long miembroId) {
         gimnasioService.eliminarMiembro(miembroId, claseId);
+    }
+
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Horario de clase cambiado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Clase no encontrada"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor"),
+        @ApiResponse(responseCode = "401", description = "No autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo administradores y entrenadores")
+    })
+    @Operation(
+        summary = "Cambiar horario de clase", 
+        description = "Permite cambiar el horario de una clase específica. Solo administradores y entrenadores pueden realizar esta acción. Se envía una notificación automática del cambio."
+    )
+    @PutMapping("/clases/{claseId}/cambiar-horario")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
+    public void cambiarHorario(
+        @Parameter(description = "ID de la clase a modificar", required = true)
+        @PathVariable Long claseId, 
+        @Parameter(description = "Nueva fecha y hora para la clase en formato ISO (ej: 2024-12-25T10:30:00)", required = true)
+        @RequestParam String nuevaFechaHora) {
+        
+        LocalDateTime nuevoHorario = LocalDateTime.parse(nuevaFechaHora);
+        gimnasioService.cambiarHorario(claseId, nuevoHorario);
     }
 }
