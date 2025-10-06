@@ -35,6 +35,12 @@ public class ClaseService {
         return claseRepository.findAll();
     }
 
+    public List<Clase> obtenerClasesPorMiembro(Long miembroId) {
+        return claseRepository.findAll().stream()
+            .filter(clase -> clase.getMiembroId().contains(miembroId))
+            .toList();
+    }
+
     @Autowired
     private EquipmentClient equipmentClient;
 
@@ -124,7 +130,6 @@ public class ClaseService {
         clase.setMiembroId(miembroId);
         claseRepository.save(clase);
 
-        // Enviar mensaje a Kafka después de añadir el miembro
         ocupacionProducer.actualizarOcupacion(
             claseId.toString(), 
             clase.getNombre(),
@@ -132,7 +137,6 @@ public class ClaseService {
             clase.getCapacidadMaxima()
         );
 
-        // Enviar datos de entrenamiento a Kafka
         datosEntrenamientoProducer.enviarDatosEntrenamiento(
             miembroId, 
             clase.getNombre(), 
@@ -152,7 +156,6 @@ public class ClaseService {
         clase.getMiembroId().remove(miembroId);
         claseRepository.save(clase);
 
-        // Enviar evento de ocupación actualizada
         ocupacionProducer.actualizarOcupacion(
             claseId.toString(), 
             clase.getNombre(),

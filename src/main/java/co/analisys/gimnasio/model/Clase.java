@@ -37,6 +37,10 @@ public class Clase {
         this.miembroId.add(miembroId);
     }
 
+    public void setMiembroId(List<Long> miembrosIds) {
+        this.miembroId = miembrosIds;
+    }
+
     public List<Long> getMiembroId() {
         return miembroId;
     }

@@ -20,8 +20,6 @@ public class ClaseController {
     @Autowired
     private ClaseService gimnasioService;
 
-    // Clases
-    // Endpoint: Programar clase
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Clase programada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta"),
@@ -35,7 +33,7 @@ public class ClaseController {
         return gimnasioService.programarClase(clase);
     }
 
-    // Endpoint: Obtener todas las clases
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Lista de clases obtenida exitosamente"),
         @ApiResponse(responseCode = "404", description = "No se encontraron clases"),
@@ -49,8 +47,20 @@ public class ClaseController {
         return gimnasioService.obtenerTodasClases();
     }
 
-    // Trainers
-    // Endpoint: Reservar entrenador
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de clases del miembro obtenida exitosamente"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron clases para el miembro"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor"),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
+    @Operation(summary = "Obtener clases de un miembro", description = "Permite obtener todas las clases en las que está inscrito un miembro específico")
+    @GetMapping("/clases/miembro/{miembroId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER', 'ROLE_MEMBER')")
+    public List<Clase> obtenerClasesPorMiembro(@PathVariable Long miembroId) {
+        return gimnasioService.obtenerClasesPorMiembro(miembroId);
+    }
+
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Entrenador reservado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o entrenador no encontrado"),
@@ -64,7 +74,7 @@ public class ClaseController {
         gimnasioService.reservarEntrenador(entrenadorId, claseId);
     }
 
-    // Endpoint: Cancelar reserva de entrenador
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reserva de entrenador cancelada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o entrenador no encontrado"),
@@ -78,8 +88,7 @@ public class ClaseController {
         gimnasioService.cancelarEntrenador(entrenadorId, claseId);
     }
 
-    // Equipment
-    //Endpoint: Reservar equipo
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Equipo reservado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o equipo no encontrado"),
@@ -93,7 +102,7 @@ public class ClaseController {
         gimnasioService.reservarEquipo(equipoId, cantidad, claseId);
     }
 
-    // Endpoint: Devolver equipo
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Equipo devuelto exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o equipo no encontrado"),
@@ -107,8 +116,7 @@ public class ClaseController {
         gimnasioService.devolverEquipo(equipoId, cantidad, claseId);
     }
 
-    // Members
-    //Endpoint: Agregar miembro
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Miembro agregado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o miembro no encontrado"),
@@ -122,7 +130,7 @@ public class ClaseController {
         gimnasioService.añadirMiembro(miembroId, claseId);
     }
 
-    //Endpoint: Eliminar miembro
+
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Miembro eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Clase o miembro no encontrado"),
